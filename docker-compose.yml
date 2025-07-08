@@ -24,7 +24,7 @@ services:
 
   springboot-app:
     build: .
-    container_name: springboot_container
+    container_name: jwt_Spring_application
     depends_on:
       - db
     environment:
