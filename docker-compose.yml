@@ -1,0 +1,43 @@
+version: '3.8'
+
+services:
+  db:
+    container_name: postgres_JWT
+    image: postgres:latest
+    environment:
+      POSTGRES_USER: thilinab
+      POSTGRES_PASSWORD: root
+      POSTGRES_DB: jwt
+      PGDATA: /data/postgres
+    volumes:
+      - db:/data/postgres
+    ports:
+      - "5332:5432"   # Host port 5332 → Container port 5432
+    networks:
+      - springboot-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "thilinab"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  springboot-app:
+    build: .
+    container_name: springboot_container
+    depends_on:
+      - db
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/jwt
+      SPRING_DATASOURCE_USERNAME: thilinab
+      SPRING_DATASOURCE_PASSWORD: root
+    ports:
+      - "8086:8080"   # Host port 8080 → Container port 8080
+    networks:
+      - springboot-network
+
+networks:
+  springboot-network:
+
+volumes:
+  db:
